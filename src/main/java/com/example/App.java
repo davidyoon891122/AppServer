@@ -19,14 +19,9 @@ public class App
             serverSocket = new ServerSocket(port);
             while(true) {
                 try{
-                    
-
                     Socket socket = serverSocket.accept();
-
                     Handler handler = new Handler(socket);
                     handler.start();
-
-                    
                 } catch ( Exception ex) {
                     ex.printStackTrace();
                 } 
