@@ -13,10 +13,10 @@ public class MessageHeader {
     protected byte[] headerBytes;
     protected ByteBuffer headerBuffer;
 
-    final static public int HeaderLenth = 16;
+    final static public int HeaderLength = 16;
 
     public MessageHeader() {
-        headerBytes = new byte[HeaderLenth];
+        headerBytes = new byte[HeaderLength];
         headerBuffer = ByteBuffer.wrap(headerBytes);
     }
 

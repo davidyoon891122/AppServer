@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import com.example.nettool.TestQuery;
+
 public class Client {
     
     public static void main(String[] args) {
@@ -22,6 +24,18 @@ public class Client {
             socket.connect(inetSocketAddress, timeOut);
             outputStream = new DataOutputStream(socket.getOutputStream());
             inputStream = new DataInputStream(socket.getInputStream());
+
+            String testId = "davidyoon";
+            String testPwd = "1234";
+
+            TestQuery testQuery = new TestQuery();
+            testQuery.set_userId(testId);
+            testQuery.set_userPwd(testPwd);
+            byte[] resultBytes = testQuery.getBytes();
+            
+            System.out.printf("resultBytes : %s \n", resultBytes);
+
+/*
             outputStream.writeUTF(testMessage);
 
             System.out.println("Message is sent to server");
@@ -29,7 +43,7 @@ public class Client {
             String receivedMessage = inputStream.readUTF();
 
             System.out.printf("Message from server : %s\n ", receivedMessage);
-
+*/
             
         } catch (Exception ex) {
             ex.printStackTrace();
