@@ -10,7 +10,7 @@ import com.example.nettool.TestQuery;
 public class Client {
     
     public static void main(String[] args) {
-        String ip = "localhost";
+        String ip = "10.131.158.67";
         int port = 13302;
         InetSocketAddress inetSocketAddress = new InetSocketAddress(ip, port);
         int timeOut = 5000;
@@ -32,8 +32,18 @@ public class Client {
             testQuery.set_userId(testId);
             testQuery.set_userPwd(testPwd);
             byte[] resultBytes = testQuery.getBytes();
+
             
             System.out.printf("resultBytes : %s \n", resultBytes);
+            for(int i = 0; i< 3; i++) {
+                outputStream.write(resultBytes);
+                
+                String recvString = inputStream.readUTF();
+
+                System.out.println(recvString);
+                outputStream.flush();
+            }
+
 
 /*
             outputStream.writeUTF(testMessage);
