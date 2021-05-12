@@ -63,6 +63,7 @@ public class Reader {
 
     protected String readString() throws Exception {
         short length = readShort();
+        System.out.printf("recevied string length : %s\n", length);
         byte[] bytes = new byte[length];
         read(bytes);
         String result = new String(bytes, encodingType);
@@ -70,6 +71,13 @@ public class Reader {
     }
 
 
+    public void clearInputStream() {
+        try {
+            inputStream.skip(inputStream.available());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
 
 

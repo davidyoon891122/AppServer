@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import com.example.nettool.HeaderReader;
 import com.example.nettool.TestQuery;
 
 public class Client {
@@ -19,6 +20,7 @@ public class Client {
         Socket socket = new Socket();
         DataInputStream inputStream = null;
         DataOutputStream outputStream = null;
+        HeaderReader headerReader = null;
 
         try{
             socket.connect(inetSocketAddress, timeOut);
@@ -33,17 +35,22 @@ public class Client {
             testQuery.set_userPwd(testPwd);
             byte[] resultBytes = testQuery.getBytes();
 
-            
-            System.out.printf("resultBytes : %s \n", resultBytes);
-            for(int i = 0; i< 3; i++) {
-                outputStream.write(resultBytes);
-                
-                String recvString = inputStream.readUTF();
 
-                System.out.println(recvString);
-                outputStream.flush();
+
+            System.out.printf("resultBytes : %s \n", resultBytes);
+            outputStream.write(resultBytes);
+            Thread.sleep(1000);
+            System.out.println("received data Length : " + inputStream.available());
+            if (inputStream.available() > 0 ) {
+
+            
+                headerReader = new HeaderReader(inputStream);
+
+                headerReader.run();
             }
 
+            outputStream.flush();
+       
 
 /*
             outputStream.writeUTF(testMessage);

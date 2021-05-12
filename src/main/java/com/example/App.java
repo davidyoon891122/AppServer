@@ -46,7 +46,8 @@ public class App
 
 class Handler extends Thread {
     Socket socket = null;
-    
+    DataInputStream inputStream = null;
+    DataOutputStream outputStream = null;
 
 
     public Handler(Socket socket) {
@@ -56,26 +57,30 @@ class Handler extends Thread {
 
     @Override
     public void run() {
-        DataInputStream inputStream = null;
-        DataOutputStream outputStream = null;
         HeaderReader headerReader = null;
         try{
             inputStream = new DataInputStream(socket.getInputStream());
-            System.out.println("inputstream avail : " +inputStream.available());
             outputStream = new DataOutputStream(socket.getOutputStream());
+            byte[] replyBytes = null;
             while(true) {
-                headerReader = new HeaderReader(inputStream);
 
-                headerReader.run();
-                
-                System.out.println("Server received Data from Client");
-                outputStream.writeUTF("str");
+                if (inputStream.available() > 0) {
+                    headerReader = new HeaderReader(inputStream);
 
-                inputStream.skip(inputStream.available());
-                
-                outputStream.flush();
+                    headerReader.run();
+                    
+                    
+                    System.out.println("Server received Data from Client");
 
-            } 
+                    replyBytes = headerReader.get_replyBytes();
+
+                    System.out.println("reply Bytes : " + replyBytes);
+                    outputStream.write(replyBytes);
+                    clearInputStream();
+                    outputStream.flush();
+                }
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -88,5 +93,13 @@ class Handler extends Thread {
             }
         }
         
+    }
+
+    private void clearInputStream() {
+        try {
+            inputStream.skip(inputStream.available()); 
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
