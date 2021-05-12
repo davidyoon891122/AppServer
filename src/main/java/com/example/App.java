@@ -5,6 +5,12 @@ import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.example.nettool.HeaderReader;
+import com.example.nettool.MessageHeader;
+import com.example.nettool.SocketReader;
+import com.example.serviceObject.Login;
+import com.example.services.LoginReader;
+
 /**
  * Hello world!
  *
@@ -17,6 +23,7 @@ public class App
         ServerSocket serverSocket = null;
         try{
             serverSocket = new ServerSocket(port);
+            //accept clients with thread handler
             while(true) {
                 try{
                     Socket socket = serverSocket.accept();
@@ -50,30 +57,49 @@ class Handler extends Thread {
 
     @Override
     public void run() {
-        // TODO Auto-generated method stub
-        super.run();
-        while(true) {
-            try{
+        HeaderReader headerReader = null;
+        try{
+            inputStream = new DataInputStream(socket.getInputStream());
+            outputStream = new DataOutputStream(socket.getOutputStream());
+            byte[] replyBytes = null;
+            while(true) {
 
-                inputStream = new DataInputStream(socket.getInputStream());
-                outputStream = new DataOutputStream(socket.getOutputStream());
+                if (inputStream.available() > 0) {
+                    headerReader = new HeaderReader(inputStream);
 
-                String receivedString = inputStream.readUTF();
-                System.out.println("received String : " + receivedString);
+                    headerReader.run();
+                    
+                    
+                    System.out.println("Server received Data from Client");
 
-                outputStream.writeUTF(receivedString);
-                System.out.println("sent received message to client.");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                try{
-                    if(inputStream != null) inputStream.close();
-                    if(outputStream != null) outputStream.close();
-                    if(socket != null) socket.close();
-                    break;
-                } catch(Exception ex2) {
-                    ex2.printStackTrace();
+                    replyBytes = headerReader.get_replyBytes();
+
+                    System.out.println("reply Bytes : " + replyBytes);
+                    outputStream.write(replyBytes);
+                    clearInputStream();
+                    outputStream.flush();
                 }
             }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try{
+                if(inputStream != null) inputStream.close();
+                if(outputStream != null) outputStream.close();
+                if(socket != null) socket.close();
+            } catch(Exception ex2) {
+                ex2.printStackTrace();
+            }
+        }
+        
+    }
+
+    private void clearInputStream() {
+        try {
+            inputStream.skip(inputStream.available()); 
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

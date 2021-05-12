@@ -1,6 +1,7 @@
 package com.example.nettool;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class MessageHeader {
     protected int length;
@@ -44,6 +45,30 @@ public class MessageHeader {
         this.flag = flag;
     }
 
+    public int get_length() {
+        return this.length;
+    }
+
+    public short get_process() {
+        return this.process;
+    }
+
+    public short get_service() {
+        return this.service;
+    }
+
+    public int get_window() {
+        return this.window;
+    }
+
+    public byte get_control() {
+        return this.flag;
+    }
+
+    public byte get_flag() {
+        return this.control;
+    }
+
     public byte[] getBytes() {
         headerBuffer.clear();
         headerBuffer.putInt(this.length);
@@ -58,5 +83,19 @@ public class MessageHeader {
         return headerBytes;
     }
 
+    public String makeService(){
+        return String.format("%03d", get_process()) + String.format("%03d", get_service()); 
+    }
+
+
+    @Override
+    public String toString() {
+        return "MessageHeader [control=" + control + ", flag=" + flag + ", headerBuffer=" + headerBuffer
+                + ", headerBytes=" + Arrays.toString(headerBytes) + ", length=" + length + ", process=" + process
+                + ", service=" + service + ", window=" + window + "]";
+    }
+
+
+    
     
 }
